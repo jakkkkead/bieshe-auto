@@ -23,7 +23,7 @@ public class ListUtil {
      */
     public static Double[] getSimpleNumList(List<List<String>> list,Integer index){
         //List<Double> reList = new ArrayList<>(list.size());
-        Double[] reDouble = new Double[list.size()-index];
+        Double[] reDouble = initDouble(list.get(0).size()-index);
 
         for(int y =0 ; y<list.size();y++){
             for(int i = index;i<list.get(y).size();i++){
@@ -31,6 +31,13 @@ public class ListUtil {
             }
         }
         return  reDouble;
+    }
+    public static Double [] initDouble(int size){
+        Double[] arr = new Double[size];
+        for(int i=0 ; i< size ; i++){
+            arr[i] = Double.valueOf(0);
+        }
+        return arr;
     }
 
     /**

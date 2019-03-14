@@ -167,13 +167,24 @@ public class FileUtils {
         }
 
     }
-    public static void checkXY(Integer x ,Integer y){
-        if(x!=null && x == -1){
-            x = null;
+    public static String checkXY(Integer index,Integer x ,Integer y){
+        String msg =null;
+        if(index == -1 || index == null){
+            msg = "请选择分割线！";
         }
-        if(y!=null && y == -1){
-            y = null;
+        if(x!=-1 && y == -1 ){
+            msg = "请选择y轴，且y轴不能为默认！";
         }
+        if(y!=-1 &&  x== -1 ){
+            msg = "请选择x轴，且x轴不能为默认！";
+        }
+        if(x!=-1 &&  x>= index){
+            msg = "x轴数据必须处于分割线前";
+        }
+        if(y!=-1 &&  y< index){
+            msg = "y轴数据必须处于分割线后";
+        }
+        return msg;
     }
 
 }

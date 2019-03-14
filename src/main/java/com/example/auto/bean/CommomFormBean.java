@@ -13,5 +13,6 @@ public class CommomFormBean {
     private String type;
     private Object[] objects;
     private String yName;
+    private String xName;
     private String id;
 }

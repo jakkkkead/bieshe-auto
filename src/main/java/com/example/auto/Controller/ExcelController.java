@@ -79,25 +79,47 @@ public class ExcelController {
        if(excelList ==null || typeList == null){
            return RestResultGenerator.createFailResult("文件已过期，请重新上传！");
        }
-       FileUtils.checkXY(x,y);
+       String msg = FileUtils.checkXY(index,x,y);
+       if(msg!=null){
+           return RestResultGenerator.createFailResult(msg);
+       }
+        if(x!=null && x == -1){
+            x = null;
+        }
+        if(y!=null && y == -1){
+            y = null;
+        }
      //  FileUtils.formatDataToNum(excelList,index);
         if(x != null && y != null ){
-          Map<String,Double> map =   ListUtil.groupList(excelList,x,y);
-            CommomFormBean commomFormBean = new CommomFormBean();
-            commomFormBean.setObjects(new Object[1]);
-            commomFormBean.getObjects()[0] = map;
-            commomFormBean.setType("map");
-            commomFormBean.setYName(typeList.get(y).toString());
-            return RestResultGenerator.createOkResult(commomFormBean);
+            try{
+                Map<String,Double> map =   ListUtil.groupList(excelList,x,y);
+                CommomFormBean commomFormBean = new CommomFormBean();
+                commomFormBean.setObjects(new Object[1]);
+                commomFormBean.getObjects()[0] = map;
+                commomFormBean.setType("map");
+                commomFormBean.setYName(typeList.get(y));
+                commomFormBean.setXName(typeList.get(x));
+                return RestResultGenerator.createOkResult(commomFormBean);
+            }catch (Exception e){
+                e.printStackTrace();
+                return RestResultGenerator.createFailResult("分割线设置错误！");
+            }
+
         }else {
-            Double[] datalist = ListUtil.getSimpleNumList(excelList,index);
-            List<String> headList = ListUtil.getCategery(typeList,index);
-            CommomFormBean commomFormBean = new CommomFormBean();
-            commomFormBean.setObjects(new Object[2]);
-            commomFormBean.getObjects()[0] = headList;
-            commomFormBean.getObjects()[1] = datalist;
-            commomFormBean.setType("list");
-            return RestResultGenerator.createOkResult(commomFormBean);
+            try{
+                Double[] datalist = ListUtil.getSimpleNumList(excelList,index);
+                List<String> headList = ListUtil.getCategery(typeList,index);
+                CommomFormBean commomFormBean = new CommomFormBean();
+                commomFormBean.setObjects(new Object[2]);
+                commomFormBean.getObjects()[0] = headList;
+                commomFormBean.getObjects()[1] = datalist;
+                commomFormBean.setType("list");
+                return RestResultGenerator.createOkResult(commomFormBean);
+            }catch(Exception e){
+                e.printStackTrace();
+                return RestResultGenerator.createFailResult("分割线设置错误！");
+            }
+
         }
        //return RestResultGenerator.createFailResult();
     }
