@@ -1,5 +1,6 @@
 package com.example.auto.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -14,7 +15,8 @@ import java.util.List;
 
 @Configuration
 public class MymvcConfig implements WebMvcConfigurer {
-
+    @Autowired
+    private LoginHandler loginHandler;
     @Override
     public void configurePathMatch(PathMatchConfigurer pathMatchConfigurer) {
 
@@ -42,8 +44,8 @@ public class MymvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry interceptorRegistry) {
-        //   String[] exclues = new String[]{"/tologin","/tosigin","/sigin","/login","/js/**","/css/**"};
-       interceptorRegistry.addInterceptor(new LoginHandler()).addPathPatterns("/**");
+        String[] exclues = new String[]{"/tologin","/tosigin","/sigin","/login","/js/**","/css/**"};
+        interceptorRegistry.addInterceptor(loginHandler).addPathPatterns("/**");
     }
 
     @Override
