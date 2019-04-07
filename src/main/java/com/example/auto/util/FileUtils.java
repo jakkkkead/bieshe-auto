@@ -23,18 +23,20 @@ public class FileUtils {
     private static final Log logger = LogFactory.getLog(FileUtils.class);
     private final static String xls = "xls";
     private final static String xlsx = "xlsx";
+
     public static void checkFile(MultipartFile file) throws IOException {
         //判断文件是否存在
-        if(null == file){
+        if (null == file) {
             throw new FileNotFoundException("文件不存在！");
         }
         //获得文件名
         String fileName = file.getOriginalFilename();
         //判断文件是否是excel文件
-        if(!fileName.endsWith(xls) && !fileName.endsWith(xlsx)){
+        if (!fileName.endsWith(xls) && !fileName.endsWith(xlsx)) {
             throw new IOException(fileName + "不是excel文件");
         }
     }
+
     public static Workbook getWorkBook(MultipartFile file) {
         //获得文件名
         String fileName = file.getOriginalFilename();
@@ -60,30 +62,32 @@ public class FileUtils {
 
     /**
      * 获取文件名，去除后缀
+     *
      * @param file
      * @return
      */
-    public static String getFileName(MultipartFile file){
+    public static String getFileName(MultipartFile file) {
         String name = file.getOriginalFilename();
-        return name.substring(0,name.lastIndexOf("."));
+        return name.substring(0, name.lastIndexOf("."));
     }
 
     /**
      * 获取每个单元个的数据，结果都为字符串
+     *
      * @param cell
      * @return
      */
-    public static String getCellValue(Cell cell){
+    public static String getCellValue(Cell cell) {
         String cellValue = "";
-        if(cell == null){
+        if (cell == null) {
             return cellValue;
         }
         //把数字当成String来读，避免出现1读成1.0的情况
-        if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
             cell.setCellType(Cell.CELL_TYPE_STRING);
         }
         //判断数据的类型
-        switch (cell.getCellType()){
+        switch (cell.getCellType()) {
             case Cell.CELL_TYPE_NUMERIC: //数字,分为日期和字符串
                 if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
                     SimpleDateFormat sdf = null;
@@ -129,15 +133,15 @@ public class FileUtils {
 
     /**
      * 获取每一行的数据
+     *
      * @param sheet
      * @param rowNum
      * @return string[]
-     *
      */
-    public static List<String> getRowData(Sheet sheet,int rowNum){
+    public static List<String> getRowData(Sheet sheet, int rowNum) {
         Row row = sheet.getRow(rowNum);
         if (row == null) {
-            return  null;
+            return null;
         }
         //获得当前行的开始列
         int firstCellNum = row.getFirstCellNum();
@@ -147,41 +151,43 @@ public class FileUtils {
         //循环当前行
         for (int cellNum = firstCellNum; cellNum < lastCellNum; cellNum++) {
             Cell cell = row.getCell(cellNum);
-             cells.add(FileUtils.getCellValue(cell)) ;
+            cells.add(FileUtils.getCellValue(cell));
         }
         return cells;
     }
 
     /**
      * 按照分割线，将string转为double，
+     *
      * @param list
      * @param index
      */
-    public static void formatDataToNum(List<Object[] >list , Integer index){
+    public static void formatDataToNum(List<Object[]> list, Integer index) {
         //每行数据是一个string数组，根据切割线转换为数字
-        for(Object[] row : list){
-            for(int i =index; i<row.length;i++){
+        for (Object[] row : list) {
+            for (int i = index; i < row.length; i++) {
                 row[i] = (Double) row[i];
             }
 
         }
 
     }
-    public static String checkXY(Integer index,Integer x ,Integer y){
-        String msg =null;
-        if(index == -1 || index == null){
+
+    public static String checkXY(Integer index, Integer x, Integer y) {
+        String msg = null;
+        if (index == -1 || index == null) {
             msg = "请选择分割线！";
         }
-        if(x!=-1 && y == -1 ){
+        if (x != -1 && y == -1) {
             msg = "请选择y轴，且y轴不能为默认！";
         }
-        if(y!=-1 &&  x== -1 ){
+        if (y != -1 && x == -1) {
             msg = "请选择x轴，且x轴不能为默认！";
         }
-        if(x!=-1 &&  x>= index){
+        if (x != -1 && x >= index) {
             msg = "x轴数据必须处于分割线前";
         }
-        if(y!=-1 &&  y< index){
+        if (y != -1 && y < index) {
             msg = "y轴数据必须处于分割线后";
         }
         return msg;

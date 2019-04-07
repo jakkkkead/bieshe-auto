@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -63,7 +64,7 @@ public class ExcelController {
         }else{
             return RestResultGenerator.createFailResult("上传表格失败！");
         }
-        String fileId = Md5Util.MD5(FileUtils.getFileName(file));
+        String fileId = UUID.randomUUID().toString().replaceAll("-","");
         //默认存30分钟
         redisTemplate.opsForValue().set(EXCEL_DATA+fileId,list,1800, TimeUnit.SECONDS);
         redisTemplate.opsForValue().set(EXCEL_HEAD+fileId,typeList,1800, TimeUnit.SECONDS);
@@ -121,6 +122,5 @@ public class ExcelController {
             }
 
         }
-       //return RestResultGenerator.createFailResult();
     }
 }
