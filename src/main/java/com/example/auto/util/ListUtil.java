@@ -2,6 +2,7 @@ package com.example.auto.util;
 
 import com.example.auto.bean.CommomFormBean;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,19 +22,46 @@ public class ListUtil {
      * @param index
      * @return
      */
-    public static Double[] getSimpleNumList(List<List<String>> list,Integer index){
+    public static Double[] getSimpleNumList(List<List<String>> list,Integer index , Integer valueType){
         //List<Double> reList = new ArrayList<>(list.size());
         //初始化数组，长度为分割线之后的列长度
         Double[] reDouble = initDouble(list.get(0).size()-index);
         //y代表每一行的index
         for(int y =0 ; y<list.size();y++){
-            //x代表分割线后的index，每次循环后reDouble数据 里面的值相当于当前y行之前的总和值
+            //i代表分割线后的index，每次循环后reDouble数据 里面的值相当于当前y行之前的总和值
+
             for(int i = index;i<list.get(y).size();i++){
+                Double min =Double.valueOf(list.get(0).get(i));
                 //计算每一行的值（分割线之后）
-                reDouble[i-index] = Double.valueOf( list.get(y).get(i))+reDouble[i-index];
+                switch (valueType){
+                    case 0:reDouble[i-index] = Double.valueOf( list.get(y).get(i))+reDouble[i-index];break;
+                    case 1:min = Double.valueOf( list.get(y).get(i))<min ? min:Double.valueOf( list.get(y).get(i));
+                         reDouble[i-index] = min;
+                         break;
+                    case 2:reDouble[i-index] = (Double.valueOf( list.get(y).get(i))+reDouble[i-index])/2;break;
+                    case 3: min = Double.valueOf( list.get(y).get(i))>min ? min:Double.valueOf( list.get(y).get(i));
+                          reDouble[i-index] = min;
+                          break;
+                    default:reDouble[i-index] = Double.valueOf( list.get(y).get(i))+reDouble[i-index];break;
+                }
+
             }
         }
+        for(int i =0 ; i< reDouble.length; i++){
+            reDouble[i] = ListUtil.handlerData(reDouble[i]);
+        }
         return  reDouble;
+    }
+
+    /**
+     * 处理数据的小数位数
+     * @param data
+     * @return
+     */
+    public static Double handlerData(Double data){
+        DecimalFormat df = new DecimalFormat("#0.00");
+        Double sfDouble = Double.valueOf(data!=null?df.format(data):"0" );
+        return sfDouble;
     }
     public static Double [] initDouble(int size){
         Double[] arr = new Double[size];
@@ -63,7 +91,7 @@ public class ListUtil {
      * @param x
      * @return
      */
-    public static Map<String,Double>groupList(List<List<String>> list,Integer x,Integer y){
+    public static Map<String,Double>groupList(List<List<String>> list,Integer x,Integer y , Integer valueType){
         //以map数据结构，key为值相同的列值，值为list存储值相同的行值
         Map<String,List<List<String>>> map = new HashMap<>();
         Map<String,Double> reMap = new HashMap<>();
@@ -82,7 +110,15 @@ public class ListUtil {
             }
         }
         for (String key : map.keySet()){
-            Double res = ListUtil.caculateTotal(map.get(key),y);
+            Double res = 0.0;
+            switch (valueType){
+                case 0:  res = ListUtil.handlerData(ListUtil.caculateTotal(map.get(key),y));break;
+                case 1:  res =ListUtil.handlerData(ListUtil.caculateMax(map.get(key),y));break;
+                case 2:  res =ListUtil.handlerData(ListUtil.caculateAvg(map.get(key),y));break;
+                case 3:  res =ListUtil.handlerData(ListUtil.caculateMin(map.get(key),y));break;
+                default:
+                        res = ListUtil.handlerData(ListUtil.caculateTotal(map.get(key),y));break;
+            }
             reMap.put(key,res);
         }
         return reMap;
@@ -90,7 +126,7 @@ public class ListUtil {
     }
 
     /**
-     * 计算列值
+     * 计算列值总和
      * @param list
      * @param y
      * @return
@@ -101,5 +137,27 @@ public class ListUtil {
             sum = sum+Double.valueOf(list.get(i).get(y));
         }
         return  sum;
+    }
+    public static Double caculateAvg(List<List<String>> list,Integer y){
+        Double sum = ListUtil.caculateTotal(list,y);
+        return sum/list.size();
+    }
+    public static Double caculateMin(List<List<String>> list,Integer y){
+        Double min = Double.valueOf(list.get(0).get(y));
+        for (int i = 0; i< list.size();i++){
+            if(min >= Double.valueOf(list.get(i).get(y))){
+                min = Double.valueOf(list.get(i).get(y));
+            }
+        }
+        return min;
+    }
+    public static Double caculateMax(List<List<String>> list,Integer y){
+        Double max = 0.0;
+        for (int i = 0; i< list.size();i++){
+            if(max <= Double.valueOf(list.get(i).get(y))){
+                max = Double.valueOf(list.get(i).get(y));
+            }
+        }
+        return max;
     }
 }

@@ -4,10 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -82,12 +79,12 @@ public class FileUtils {
         if (cell == null) {
             return cellValue;
         }
-        //把数字当成String来读，避免出现1读成1.0的情况
-        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-            cell.setCellType(Cell.CELL_TYPE_STRING);
-        }
+        //全部转为字符串
+        cell.setCellType(CellType.STRING);
+       //获取单元格数据
+        cellValue = cell.getStringCellValue();
         //判断数据的类型
-        switch (cell.getCellType()) {
+ /*       switch (cell.getCellType()) {
             case Cell.CELL_TYPE_NUMERIC: //数字,分为日期和字符串
                 if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
                     SimpleDateFormat sdf = null;
@@ -127,7 +124,7 @@ public class FileUtils {
             default:
                 cellValue = "未知类型";
                 break;
-        }
+        }*/
         return cellValue;
     }
 

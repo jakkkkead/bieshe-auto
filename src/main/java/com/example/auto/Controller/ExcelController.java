@@ -74,7 +74,7 @@ public class ExcelController {
         return RestResultGenerator.createOkResult(com);
     }
     @RequestMapping("getExcelForm")
-    public RestResult getExcelForm(String fileId,Integer index,Integer x,Integer y){
+    public RestResult getExcelForm(String fileId,Integer index,Integer x,Integer y ,Integer valueType){
        List<List<String>> excelList = (List<List<String>>) redisTemplate.opsForValue().get(EXCEL_DATA+fileId);
        List<String> typeList =(List<String> )redisTemplate.opsForValue().get(EXCEL_HEAD+fileId);
        if(excelList ==null || typeList == null){
@@ -93,7 +93,7 @@ public class ExcelController {
      //  FileUtils.formatDataToNum(excelList,index);
         if(x != null && y != null ){
             try{
-                Map<String,Double> map =   ListUtil.groupList(excelList,x,y);
+                Map<String,Double> map =   ListUtil.groupList(excelList,x,y,valueType);
                 CommomFormBean commomFormBean = new CommomFormBean();
                 commomFormBean.setObjects(new Object[1]);
                 commomFormBean.getObjects()[0] = map;
@@ -108,7 +108,7 @@ public class ExcelController {
 
         }else {
             try{
-                Double[] datalist = ListUtil.getSimpleNumList(excelList,index);
+                Double[] datalist = ListUtil.getSimpleNumList(excelList,index,valueType);
                 List<String> headList = ListUtil.getCategery(typeList,index);
                 CommomFormBean commomFormBean = new CommomFormBean();
                 commomFormBean.setObjects(new Object[2]);
